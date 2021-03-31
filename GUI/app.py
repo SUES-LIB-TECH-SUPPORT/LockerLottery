@@ -1,4 +1,4 @@
-import os, sys, pickle, datetime
+import os, sys, pickle, datetime, configparser
 
 import tkinter as tk
 from tkinter import font as tf
@@ -6,15 +6,18 @@ from PIL import Image, ImageTk
 
 from lotteryUI import lotteryUI
 
-# Constants
-APP_NAME = "SUES图书馆寄包柜摇号系统"
-APP_SIZE = [1440,900]
-FOOTER_ICON_FILENAME = "logon.png"
 
 # Semi-Constants
 APP_PATH = os.path.dirname(os.path.abspath(__file__))
+os.chdir(APP_PATH)
 
-
+CONFIG = configparser.ConfigParser()
+os.chdir(APP_PATH)
+CONFIG.read('config.ini')
+# Constants
+APP_NAME = CONFIG['APP_CONFIG']['APP_NAME']
+APP_SIZE = [int(x) for x in CONFIG['APP_CONFIG']['APP_SIZE'].split('x')]
+FOOTER_ICON_FILENAME = CONFIG['APP_CONFIG']['APP_LOGO']
 
 class app:
     def __init__(self):
@@ -31,7 +34,7 @@ class app:
         #Load Resouces
         self.FOOTER_ICON_IMG = ImageTk.PhotoImage(Image.open(FOOTER_ICON_FILENAME))
         #Create Header
-        self.MAIN_FRAME = lotteryUI(master = self.root)
+        self.MAIN_FRAME = lotteryUI(master = self.root,CONFIG=CONFIG,DATA_PATH=APP_PATH)
         self.MAIN_FRAME.pack(fill=tk.BOTH,expand=True)
         #Create Footer
         self.FOOTER_FRAME = tk.Frame(master = self.root,bg="#0059b3",height=40)
@@ -67,5 +70,4 @@ class app:
 
 
 if __name__ == "__main__":
-    os.chdir(APP_PATH)
     app = app()

@@ -1,27 +1,27 @@
+import os,configparser
 import tkinter as tk
 from tkinter import font as tf
 import dataPack
 import time
 
-NUM_SPACE = 380
-PAUSE_TIME = 2
-WAIT_TIME=200
-BATCH_SIZE = 20
-CSV_PATH = '2021寄包箱申请.csv'
 
 class lotteryUI(tk.Frame):
     def __init__(self,**kwargs):
+        self.config = kwargs.pop('CONFIG')
+        self.data_path = kwargs.pop('DATA_PATH')
+        print(self.config.sections())
         tk.Frame.__init__(self,**kwargs)
         self.TITLE_FONT = tf.Font(family="宋体",size=40,weight=tf.BOLD)
         self.LABEL_FONT = tf.Font(family="宋体",size=27,weight=tf.BOLD)
         self.INFO_FONT = tf.Font(family="宋体",size=20)
-        self.space = NUM_SPACE
-        self.load(CSV_PATH)
+        self.space = int(self.config['LOTTERY_CONFIG']['NUM_SPACE'])
+        self.load(os.path.join(self.data_path,self.config['LOTTERY_CONFIG']['CSV_PATH']))
         self.init()
     
     def init(self):
-        self.batch_size = BATCH_SIZE
-        self.pause_time = PAUSE_TIME
+        self.batch_size = int(self.config['LOTTERY_CONFIG']['BATCH_SIZE'])
+        self.pause_time = int(self.config['LOTTERY_CONFIG']['PAUSE_TIME'])
+        self.wait_time = int(self.config['LOTTERY_CONFIG']['WAIT_TIME'])
         self.time_stamp = time.time()
 
         #Create UI
@@ -169,7 +169,7 @@ class lotteryUI(tk.Frame):
                     self.MAIN_VIEW.yview_moveto(0)
                 else:
                     self.MAIN_VIEW.yview_scroll(1,'pages')
-            self.MAIN_VIEW.after(WAIT_TIME,self.draftorauto)
+            self.MAIN_VIEW.after(self.wait_time,self.draftorauto)
         else:
             if self.startRoll:
                 if time.time()-self.time_stamp>self.pause_time:
@@ -178,11 +178,12 @@ class lotteryUI(tk.Frame):
                     if len(self.data.picked) == self.data.space:
                         self.data.save("Result")
                         self.pause_time *= 5
-                        self.draftorauto()
-                        return
+                        #self.draftorauto()
+                    # freeze the page for 5x wait time so that people can see results
+                    self.MAIN_VIEW.after(self.wait_time*5,self.draftorauto)
                 else:
                     self.roll()
-                self.MAIN_VIEW.after(WAIT_TIME,self.draftorauto)
+                    self.MAIN_VIEW.after(self.wait_time,self.draftorauto)
                 
 
         
