@@ -13,7 +13,7 @@ os.chdir(APP_PATH)
 
 CONFIG = configparser.ConfigParser()
 os.chdir(APP_PATH)
-CONFIG.read('config.ini')
+CONFIG.read('config.ini',encoding="utf-8-sig")
 # Constants
 APP_NAME = CONFIG['APP_CONFIG']['APP_NAME']
 APP_SIZE = [int(x) for x in CONFIG['APP_CONFIG']['APP_SIZE'].split('x')]
