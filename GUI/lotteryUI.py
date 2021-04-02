@@ -1,4 +1,4 @@
-import os,configparser
+import os
 import tkinter as tk
 from tkinter import font as tf
 import dataPack
@@ -9,7 +9,6 @@ class lotteryUI(tk.Frame):
     def __init__(self,**kwargs):
         self.config = kwargs.pop('CONFIG')
         self.data_path = kwargs.pop('DATA_PATH')
-        print(self.config.sections())
         tk.Frame.__init__(self,**kwargs)
         self.TITLE_FONT = tf.Font(family="宋体",size=40,weight=tf.BOLD)
         self.LABEL_FONT = tf.Font(family="宋体",size=27,weight=tf.BOLD)
@@ -123,7 +122,7 @@ class lotteryUI(tk.Frame):
         ys = int(self.MAIN_VIEW.yview()[0] * self.MAIN_VIEW.size())
         self.MAIN_VIEW.delete(0,tk.END)
         for p in self.data.picked:
-            self.MAIN_VIEW.insert(tk.END,self.strfperson(p.getData()))
+            self.MAIN_VIEW.insert(tk.END,self.strfperson(p.getData(self.config['DATA_CONFIG']['MASK_CHAR'])))
         self.MAIN_VIEW.yview_scroll(ys,'units')
 
     def start(self):
@@ -153,7 +152,7 @@ class lotteryUI(tk.Frame):
         self.updateInfoStatus()
         dice_val = self.data.rollDice(self.batch_size)
         for dice in dice_val:
-            self.MAIN_VIEW.insert(tk.END,self.strfperson(self.data.candidate[dice].getData()))
+            self.MAIN_VIEW.insert(tk.END,self.strfperson(self.data.candidate[dice].getData(self.config['DATA_CONFIG']['MASK_CHAR'])))
         self.MAIN_VIEW.yview_scroll(len(dice_val),'unit')
     def pickroll(self):
         dice_val = self.data.rollDice(self.batch_size)
@@ -197,7 +196,7 @@ class lotteryUI(tk.Frame):
         return str(pdata[0]) + sID*" " + str(pdata[1])+sName*" "+str(pdata[2])
 
     def load(self,path_to_csv=''):
-        self.data = dataPack.dataPack("",self.space)
+        self.data = dataPack.dataPack("",self.space,[],self.config['DATA_CONFIG']['MASK_CHAR'])
         self.data.load(path_to_csv)
 
 if __name__ == '__main__':

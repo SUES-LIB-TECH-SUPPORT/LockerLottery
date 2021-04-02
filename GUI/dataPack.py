@@ -40,13 +40,14 @@ class candidateInfo():
         return [self.getSid(),self.getName(mask),self.getCell(mask)]
 
 class dataPack():
-    def __init__(self,title=None,space=0,candidate=[]):
+    def __init__(self,title=None,space=0,candidate=[],mask_char = DEFAULT_MASK_CHAR):
         self.title = title
         self.space = space
         self.candidate = candidate
         self.picked = []
         self.waitlist = []
         self.log = []
+        self.mask_char = mask_char
         self.logActivity(self,"Datapack created for [%s] with [%d] spaces"%(title,space))
     def logActivity(self,source=None,activity=None):
         if not (source is None or activity is None):
@@ -83,19 +84,19 @@ class dataPack():
         with codecs.open(os.path.join(path,'result.csv'),'w',encoding='utf-8') as ofp:
             for candidate in self.picked:
                 try:
-                    ofp.write(":".join(candidate.getData(None))+"\n")
+                    ofp.write(":".join(candidate.getData(self.mask_char))+"\n")
                 except:
                     pass
         self.logActivity(self,"Result saved to %s"%os.path.join(path,'result.csv'))
         with codecs.open(os.path.join(path,'waitlist.csv'),'w',encoding='utf-8') as ofp:
             for candidate in self.waitlist:
                 try:
-                    ofp.write(":".join(candidate.getData(None))+"\n")
+                    ofp.write(":".join(candidate.getData(self.mask_char))+"\n")
                 except:
                     pass
             for candidate in self.candidate:
                 try:
-                    ofp.write(":".join(candidate.getData(None))+"\n")
+                    ofp.write(":".join(candidate.getData(self.mask_char))+"\n")
                 except:
                     pass
         self.logActivity(self,"Waitlist saved to %s"%os.path.join(path,'waitlist.csv'))
